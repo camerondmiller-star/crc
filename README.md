@@ -50,6 +50,7 @@ Design like an architect: I didn't just upload a file; I built a secure, scalabl
 Move fast with AI without outsourcing understanding: I can explain every component and every decision I made.
 Troubleshoot systematically: I was able to reproduce, diagnose, fix, and verify solutions using both UI and CLI tools.
 
+```mermaid
 flowchart LR
     U[User Browser] --> WPX[WPX DNS (Root Domain)]
 
@@ -69,3 +70,4 @@ flowchart LR
     end
 
     Bucket --> U
+```
