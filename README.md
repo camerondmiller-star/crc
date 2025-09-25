@@ -52,20 +52,20 @@ Troubleshoot systematically: I was able to reproduce, diagnose, fix, and verify 
 
 ```mermaid
 flowchart LR
-    U[User Browser] --> WPX[WPX DNS (Root Domain)]
+    U[User Browser] --> WPX[WPX DNS Root Domain]
 
-    WPX --> NS[NS Record Delegation for cloudresume.thecammiller.com]
+    WPX --> NS[NS Record Delegation: cloudresume.thecammiller.com]
     NS --> GCDNS[Google Cloud DNS Zone]
-    GCDNS --> FE[Load Balancer Frontend (HTTPS 443 + Static IP)]
+    GCDNS --> FE[Load Balancer Frontend: HTTPS 443 + Static IP]
 
-    subgraph LoadBalancer["Google Cloud Load Balancer (Premium Tier, Global)"]
+    subgraph LoadBalancer["Google Cloud Load Balancer - Premium Tier (Global)"]
         FE --> SSL[Google-managed SSL Certificate]
         FE --> CDN[Cloud CDN Enabled]
         CDN --> BE[Backend Bucket Mapping]
     end
 
     subgraph Storage["Google Cloud Storage Bucket"]
-        BE --> Bucket[index.html + 404.html]
+        BE --> Bucket[index.html and 404.html]
         Bucket --> Logging[Cloud Logging Enabled]
     end
 
