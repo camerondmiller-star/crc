@@ -37,4 +37,27 @@ graph TD
     style I fill:#ddf,stroke:#333,stroke-width:2px
     style J fill:#f3f3f3,stroke:#333,stroke-width:2px
 ```
-Key Architectural DecisionsSubdomain Isolation: Using cloudresume.thecammiller.com keeps my project isolated from my main WordPress site, a standard enterprise practice that avoids routing complexity and risk.Global HTTPS Load Balancer: This provides critical services like SSL termination, a global anycast IP, and a Google-managed certificate. It's the foundation for any production web service.Cloud CDN at the Edge: Enabled with a single checkbox, Cloud CDN caches my static assets at Google's global network edge, delivering real performance gains and reducing latency for users worldwide.Built-in Observability: I enabled Cloud Logging from the start to gain crucial visibility into traffic, cache efficiency, and troubleshooting.Strategic AI Usage: I used AI to accelerate boilerplate tasks like drafting the initial HTML, but I owned all architectural decisions, trade-offs, and troubleshooting.Bumps in the RoadNo project is perfect. I used a systematic approach to diagnose and fix these issues:Bucket Returned XML: Instead of serving index.html, my GCS bucket showed an XML directory listing. The Fix: I enabled "Static website hosting" on the bucket, which told it to serve index.html as the default page.SSL Certificate Stuck in "Provisioning": The Google-managed certificate wouldn't activate. The Fix: I knew this was expected until DNS was pointed correctly. After delegating the subdomain and adding the A record, I waited for DNS propagation, and the certificate activated automatically.What This Project DemonstratesThis project is a tangible portfolio piece that showcases my ability to:Design like an architect: I didn't just upload a file; I built a secure, scalable, and observable deployment.Move fast with AI without outsourcing understanding: I can explain every component and every decision I made.Troubleshoot systematically: I was able to reproduce, diagnose, fix, and verify solutions using both UI and CLI tools.
+Key Architectural DecisionsSubdomain Isolation: 
+Using cloudresume.thecammiller.com keeps my project isolated from my main WordPress site, a standard enterprise practice that avoids routing complexity and risk.Global HTTPS Load Balancer: This provides critical services like SSL termination, a global anycast IP, and a Google-managed certificate. It's the foundation for any production web service.Cloud CDN at the Edge: Enabled with a single checkbox, Cloud CDN caches my static assets at Google's global network edge, delivering real performance gains and reducing latency for users worldwide.
+
+Built-in Observability: I enabled Cloud Logging from the start to gain crucial visibility into traffic, cache efficiency, and troubleshooting.Strategic AI Usage: I used AI to accelerate boilerplate tasks like drafting the initial HTML, but I owned all architectural decisions, trade-offs, and troubleshooting.Bumps in the RoadNo project is perfect. I used a systematic approach to diagnose and fix these issues:Bucket Returned XML: Instead of serving index.html, my GCS bucket showed an XML directory listing. The Fix: I enabled "Static website hosting" on the bucket, which told it to serve index.html as the default page.
+
+SSL Certificate Stuck in "Provisioning": The Google-managed certificate wouldn't activate. The Fix: I knew this was expected until DNS was pointed correctly. After delegating the subdomain and adding the A record, I waited for DNS propagation, and the certificate activated automatically.
+
+What This Project Demonstrates
+This project is a tangible portfolio piece that showcases my ability to:
+Design like an architect: I didn't just upload a file; I built a secure, scalable, and observable deployment.
+Move fast with AI without outsourcing understanding: I can explain every component and every decision I made.
+Troubleshoot systematically: I was able to reproduce, diagnose, fix, and verify solutions using both UI and CLI tools.
+
+'''mermaid
+graph TD
+flowchart LR
+    A[User] --> B[Global HTTPS Load Balancer<br/>+ SSL + Cloud CDN]
+    B --> C[Cloud Storage Bucket<br/>(Static Resume Site)]
+
+    subgraph DNS
+        D[WPX DNS (Registrar)] -->|NS Delegation| E[Cloud DNS<br/>(Subdomain: cloudresume.thecammiller.com)]
+        E -->|A Record → LB IP| B
+    end
+'''
