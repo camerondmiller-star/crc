@@ -50,14 +50,36 @@ Design like an architect: I didn't just upload a file; I built a secure, scalabl
 Move fast with AI without outsourcing understanding: I can explain every component and every decision I made.
 Troubleshoot systematically: I was able to reproduce, diagnose, fix, and verify solutions using both UI and CLI tools.
 
-'''mermaid
-graph TD
 flowchart LR
-    A[User] --> B[Global HTTPS Load Balancer<br/>+ SSL + Cloud CDN]
-    B --> C[Cloud Storage Bucket<br/>(Static Resume Site)]
-
-    subgraph DNS
-        D[WPX DNS (Registrar)] -->|NS Delegation| E[Cloud DNS<br/>(Subdomain: cloudresume.thecammiller.com)]
-        E -->|A Record → LB IP| B
+    subgraph Client["User's Browser"]
+        U[User]
     end
-'''
+
+    subgraph DNS["DNS Resolution"]
+        WPX[WPX Hosting<br>(Root domain DNS)]
+        NS[NS Record Delegation<br>(cloudresume.thecammiller.com)]
+        GCDNS[Google Cloud DNS<br>(A Record → LB IP)]
+    end
+
+    subgraph LB["Google Cloud Load Balancer (Global HTTPS, Premium Tier)"]
+        FE[Frontend<br>HTTPS 443 + Static IP]
+        SSL[Google-managed SSL Cert]
+        CDN[Cloud CDN Enabled]
+        BE[Backend Bucket Mapping]
+    end
+
+    subgraph GCS["Google Cloud Storage"]
+        Bucket[Bucket: cloudresume.thecammiller.com<br>index.html + 404.html]
+        Logging[Cloud Logging Enabled]
+    end
+
+    U -->|Request: https://cloudresume.thecammiller.com| WPX
+    WPX -->|Delegated Subdomain NS Records| NS
+    NS --> GCDNS
+    GCDNS --> FE
+    FE --> SSL
+    FE --> CDN
+    CDN --> BE
+    BE --> Bucket
+    Bucket --> Logging
+    Bucket -->|Serve index.html or 404.html| U
