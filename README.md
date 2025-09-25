@@ -2,40 +2,43 @@ Cloud Resume ChallengeThis project documents my end-to-end process of building a
 
 ```mermaid
 graph TD
-    A[User's Browser] --> B(WPX Domain Registrar)
-    B --> C(Cloud DNS Zone)
+    %% Define the primary styles for the diagram
+    classDef main-node fill:#2c3e50,stroke:#2c3e50,stroke-width:2px,color:#f4f7f6,font-weight:bold,rx:8px,ry:8px;
+    classDef file-node fill:#f4f7f6,stroke:#e67e22,stroke-width:2px,color:#2c3e50,rx:8px,ry:8px,font-weight:bold;
+    classDef external fill:#bbf,stroke:#333,stroke-width:2px,color:#2c3e50,rx:8px,ry:8px;
+    classDef accent-node fill:#e67e22,stroke:#e67e22,stroke-width:2px,color:#f4f7f6,font-weight:bold,rx:8px,ry:8px;
+    classDef log-node fill:#ecf0f1,stroke:#bdc3c7,stroke-width:2px,color:#2c3e50,rx:8px,ry:8px;
+    
+    %% Define the nodes with custom styling
+    A[User's Browser 💻]:::main-node --> B(WPX Domain Registrar)
+    B:::external --> C(Cloud DNS Zone)
     C -- NS Delegation --> C
-    A -- HTTPS Request --> D(Global HTTPS Load Balancer)
-    D -- Route Traffic --> E(Backend Bucket)
-    E -- Static Website Hosting) --> E
+    A -- HTTPS Request --> D(Global HTTPS Load Balancer 🛡️)
+    D:::accent-node --> E(Backend Bucket)
+    E:::main-node -- Static Website Hosting --> E
     E --> F[index.html]
     E --> G[404.html]
     D -- SSL Certificate Provisioning --> H(Google Managed SSL Cert)
-    H -- Verified by DNS --> C
+    H:::main-node -- Verified by DNS --> C
     D -- Cache content --> I(Cloud CDN)
-    I -- Cloud Logging --> J(Cloud Logging)
+    I:::accent-node --> J(Cloud Logging)
+    J:::log-node
 
-    subgraph "Google Cloud"
+    %% Subgraph to group Google Cloud components
+    subgraph "Google Cloud Platform"
         C
         D
         E
-        F
-        G
+        F:::file-node
+        G:::file-node
         H
         I
         J
     end
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style C fill:#ccf,stroke:#333,stroke-width:2px
-    style D fill:#ddf,stroke:#333,stroke-width:2px
-    style E fill:#eef,stroke:#333,stroke-width:2px
-    style F fill:#9f9,stroke:#333,stroke-width:2px
-    style G fill:#f99,stroke:#333,stroke-width:2px
-    style H fill:#9f9,stroke:#333,stroke-width:2px
-    style I fill:#ddf,stroke:#333,stroke-width:2px
-    style J fill:#f3f3f3,stroke:#333,stroke-width:2px
+    %% Hide the arrow from log node for a cleaner look
+    linkStyle 9 stroke-width:0px;
+
 ```
 Key Architectural DecisionsSubdomain Isolation: 
 Using cloudresume.thecammiller.com keeps my project isolated from my main WordPress site, a standard enterprise practice that avoids routing complexity and risk.Global HTTPS Load Balancer: This provides critical services like SSL termination, a global anycast IP, and a Google-managed certificate. It's the foundation for any production web service.Cloud CDN at the Edge: Enabled with a single checkbox, Cloud CDN caches my static assets at Google's global network edge, delivering real performance gains and reducing latency for users worldwide.
