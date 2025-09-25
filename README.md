@@ -51,35 +51,21 @@ Move fast with AI without outsourcing understanding: I can explain every compone
 Troubleshoot systematically: I was able to reproduce, diagnose, fix, and verify solutions using both UI and CLI tools.
 
 flowchart LR
-    subgraph Client["User's Browser"]
-        U[User]
+    U[User Browser] --> WPX[WPX DNS (Root Domain)]
+
+    WPX --> NS[NS Record Delegation for cloudresume.thecammiller.com]
+    NS --> GCDNS[Google Cloud DNS Zone]
+    GCDNS --> FE[Load Balancer Frontend (HTTPS 443 + Static IP)]
+
+    subgraph LoadBalancer["Google Cloud Load Balancer (Premium Tier, Global)"]
+        FE --> SSL[Google-managed SSL Certificate]
+        FE --> CDN[Cloud CDN Enabled]
+        CDN --> BE[Backend Bucket Mapping]
     end
 
-    subgraph DNS["DNS Resolution"]
-        WPX[WPX Hosting<br>(Root domain DNS)]
-        NS[NS Record Delegation<br>(cloudresume.thecammiller.com)]
-        GCDNS[Google Cloud DNS<br>(A Record → LB IP)]
+    subgraph Storage["Google Cloud Storage Bucket"]
+        BE --> Bucket[index.html + 404.html]
+        Bucket --> Logging[Cloud Logging Enabled]
     end
 
-    subgraph LB["Google Cloud Load Balancer (Global HTTPS, Premium Tier)"]
-        FE[Frontend<br>HTTPS 443 + Static IP]
-        SSL[Google-managed SSL Cert]
-        CDN[Cloud CDN Enabled]
-        BE[Backend Bucket Mapping]
-    end
-
-    subgraph GCS["Google Cloud Storage"]
-        Bucket[Bucket: cloudresume.thecammiller.com<br>index.html + 404.html]
-        Logging[Cloud Logging Enabled]
-    end
-
-    U -->|Request: https://cloudresume.thecammiller.com| WPX
-    WPX -->|Delegated Subdomain NS Records| NS
-    NS --> GCDNS
-    GCDNS --> FE
-    FE --> SSL
-    FE --> CDN
-    CDN --> BE
-    BE --> Bucket
-    Bucket --> Logging
-    Bucket -->|Serve index.html or 404.html| U
+    Bucket --> U
