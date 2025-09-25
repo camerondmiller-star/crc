@@ -1,4 +1,4 @@
-Cloud Resume ArchitectureThis diagram illustrates the secure, scalable, and globally available deployment you built for cloudresume.thecammiller.com.
+Cloud Resume ChallengeThis project documents my end-to-end process of building and deploying a production-grade personal resume website on Google Cloud, leveraging AI as a copilot. The entire process was completed in approximately 5 hours over three days.Cloud Resume ArchitectureThis diagram illustrates the secure, scalable, and globally available deployment I built for cloudresume.thecammiller.com.
 
 ```mermaid
 graph TD
@@ -7,7 +7,7 @@ graph TD
     C -- NS Delegation --> C
     A -- HTTPS Request --> D(Global HTTPS Load Balancer)
     D -- Route Traffic --> E(Backend Bucket)
-    E -- Static Website Hosting --> E
+    E -- Static Website Hosting) --> E
     E --> F[index.html]
     E --> G[404.html]
     D -- SSL Certificate Provisioning --> H(Google Managed SSL Cert)
@@ -36,16 +36,5 @@ graph TD
     style H fill:#9f9,stroke:#333,stroke-width:2px
     style I fill:#ddf,stroke:#333,stroke-width:2px
     style J fill:#f3f3f3,stroke:#333,stroke-width:2px
-
-    linkStyle 0 stroke:#000,stroke-width:2px,fill:none,color:#000;
-    linkStyle 1 stroke:#000,stroke-width:2px,fill:none,color:#000;
-    linkStyle 2 stroke:#000,stroke-width:2px,fill:none,color:#000;
-    linkStyle 3 stroke:#000,stroke-width:2px,fill:none,color:#000;
-    linkStyle 4 stroke:#000,stroke-width:2px,fill:none,color:#000;
-    linkStyle 5 stroke:#000,stroke-width:2px,fill:none,color:#000;
-    linkStyle 6 stroke:#000,stroke-width:2px,fill:none,color:#000;
-    linkStyle 7 stroke:#000,stroke-width:2px,fill:none,color:#000;
-    linkStyle 8 stroke:#000,stroke-width:2px,fill:none,color:#000;
 ```
-
-Explanation of the FlowWPX Domain Registrar: Your main domain thecammiller.com is managed here. You've configured a NS record to delegate the subdomain cloudresume.thecammiller.com.Cloud DNS Zone: This is the dedicated zone for your subdomain within Google Cloud. It holds the A record that points to your load balancer's IP address.User's Browser: When a user requests https://cloudresume.thecammiller.com, the request first goes to the registrar, which redirects it to the Google Cloud DNS zone.Global HTTPS Load Balancer: This is the entry point for all web traffic. It provides a static IP, handles HTTPS/SSL termination, and directs traffic to the backend. It also uses Cloud Logging to record requests.Google Managed SSL Cert: This certificate is automatically provisioned and renewed by Google. Its activation depends on the DNS records correctly pointing to the load balancer.Backend Bucket: This is your Google Cloud Storage bucket where the static files (index.html and 404.html) are stored. It's configured to serve index.html as the main page and 404.html as the error page.Cloud CDN: A single checkbox in the load balancer configuration, Cloud CDN caches your content at Google's edge locations, ensuring fast global loads.Cloud Logging: Enabled on the backend, this provides observability and helps you track traffic and troubleshoot issues.This visual representation should be helpful in explaining the architecture in a clear and concise way, which can be useful for interviews or for your own reference.
+Key Architectural DecisionsSubdomain Isolation: Using cloudresume.thecammiller.com keeps my project isolated from my main WordPress site, a standard enterprise practice that avoids routing complexity and risk.Global HTTPS Load Balancer: This provides critical services like SSL termination, a global anycast IP, and a Google-managed certificate. It's the foundation for any production web service.Cloud CDN at the Edge: Enabled with a single checkbox, Cloud CDN caches my static assets at Google's global network edge, delivering real performance gains and reducing latency for users worldwide.Built-in Observability: I enabled Cloud Logging from the start to gain crucial visibility into traffic, cache efficiency, and troubleshooting.Strategic AI Usage: I used AI to accelerate boilerplate tasks like drafting the initial HTML, but I owned all architectural decisions, trade-offs, and troubleshooting.Bumps in the RoadNo project is perfect. I used a systematic approach to diagnose and fix these issues:Bucket Returned XML: Instead of serving index.html, my GCS bucket showed an XML directory listing. The Fix: I enabled "Static website hosting" on the bucket, which told it to serve index.html as the default page.SSL Certificate Stuck in "Provisioning": The Google-managed certificate wouldn't activate. The Fix: I knew this was expected until DNS was pointed correctly. After delegating the subdomain and adding the A record, I waited for DNS propagation, and the certificate activated automatically.What This Project DemonstratesThis project is a tangible portfolio piece that showcases my ability to:Design like an architect: I didn't just upload a file; I built a secure, scalable, and observable deployment.Move fast with AI without outsourcing understanding: I can explain every component and every decision I made.Troubleshoot systematically: I was able to reproduce, diagnose, fix, and verify solutions using both UI and CLI tools.
